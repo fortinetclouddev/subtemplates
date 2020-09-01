@@ -140,13 +140,25 @@
           "description": "Base URL of the solution template gallery package",
           "artifactsBaseUrl": ""
         }
+      },
+      "location": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]"
+      },
+      "resourceGroupName": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().name]"
+      },
+      "resourceGroupID": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().id]"
       }
     },
     "variables": {
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('location')]",
   
       "vnetNewOrExisting": "new",
-      "vnetResourceGroup": "[resourceGroup().name]",
+      "vnetResourceGroup": "[parameters('resourceGroupName')]",
   
       "vnetID": "[resourceId(variables('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('fwbVnetName'))]",
       "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('fwbSubnet1Name'))]",
@@ -155,8 +167,8 @@
       "vmName": "[concat(parameters('fortiWebNamePrefix'),'1')]",
       "vm2Name": "[concat(parameters('fortiWebNamePrefix'),'2')]",
   
-      "storageAccount_VM1": "[concat(variables('vmName'),uniqueString(resourceGroup().id))]",
-      "storageAccount_VM2": "[concat(variables('vm2Name'),uniqueString(resourceGroup().id))]",
+      "storageAccount_VM1": "[concat(variables('vmName'),uniqueString(parameters('resourceGroupID')))]",
+      "storageAccount_VM2": "[concat(variables('vm2Name'),uniqueString(parameters('resourceGroupID')))]",
   
       "network_NIC_fw11_Name": "[concat('nic-',variables('vmName'),'-01')]",
       "network_NIC_fw11_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('network_NIC_fw11_Name'))]",
