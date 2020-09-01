@@ -265,8 +265,9 @@
                   }
             }
           }
-        ],
-        "resources": [
+        ]
+      },
+      "resources": [
         {
           "apiVersion": "2020-04-01",
           "type": "virtualNetworkPeerings",
@@ -277,17 +278,16 @@
           ],
           "comments": "DMZ to Hub",
           "properties": {
-              "allowVirtualNetworkAccess": "true",
-              "allowForwardedTraffic": "true",
-              "allowGatewayTransit": "false",
-              "useRemoteGateways": "false",
+              "allowVirtualNetworkAccess": true,
+              "allowForwardedTraffic": true,
+              "allowGatewayTransit": false,
+              "useRemoteGateways": false,
               "remoteVirtualNetwork": {
                   "id": "[parameters('vnetID')]"
               }
           }
         }
       ]
-      }
     },
     {
       "apiVersion": "2017-09-01",
