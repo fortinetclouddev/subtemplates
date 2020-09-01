@@ -152,6 +152,12 @@
       "resourceGroupID": {
           "type": "string",
           "defaultValue": "[resourceGroup().id]"
+      },
+      "vnetID": {
+          "type": "string"
+      },
+      "DMZtoHubPeeringName": {
+          "type": "string"
       }
     },
     "variables": {
@@ -259,7 +265,28 @@
                   }
             }
           }
-        ]
+        ],
+        "resources": [
+        {
+          "apiVersion": "2020-04-01",
+          "type": "virtualNetworkPeerings",
+          "name": "[parameters('DMZtoHubPeeringName')]",
+          "location": "[variables('location')]",
+          "dependsOn": [
+              "[parameters('fwbVnetName')]"
+          ],
+          "comments": "DMZ to Hub",
+          "properties": {
+              "allowVirtualNetworkAccess": "true",
+              "allowForwardedTraffic": "true",
+              "allowGatewayTransit": "false",
+              "useRemoteGateways": "false",
+              "remoteVirtualNetwork": {
+                  "id": "[parameters('vnetID')]"
+              }
+          }
+        }
+      ]
       }
     },
     {
