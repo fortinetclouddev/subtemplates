@@ -1,0 +1,683 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "adminUsername": {
+        "type": "string",
+        "metadata": {
+          "description": "Username for the Virtual Machine."
+        }
+      },
+      "adminPassword": {
+        "type": "securestring",
+        "metadata": {
+          "description": "Password for the Virtual Machine."
+        }
+      },
+      "FortiWebNamePrefix": {
+        "type": "string",
+          "defaultValue": "fortiweb",
+        "metadata": {
+          "description": "Name for FortiWeb virtual appliances (1 & 2 will be appended to the end of each respectively)."
+        }
+      },
+      "FortiWebImageSKU": {
+        "type": "string",
+        "defaultValue": "fortinet_fw-vm",
+        "allowedValues": [
+          "fortinet_fw-vm",
+          "fortinet_fw-vm_payg"
+        ],
+        "metadata": {
+          "description": "Identifies whether to to use PAYG (on demand licensing) or BYOL license model (where license is purchased separately)"
+        }
+      },
+      "FortiWebVersion": {
+        "type": "string",
+        "defaultValue": "6.3.4",
+        "allowedValues": [
+          "6.2.1",
+          "6.3.4",
+          "latest"
+        ],
+        "metadata": {
+          "description": "Image version"
+        }
+      },
+      "instanceType": {
+        "type": "string",
+        "defaultValue": "Standard_F8s",
+        "allowedValues":[
+          "Standard_F8s",
+          "Standard_F4s",
+          "Standard_F8",
+          "Standard_F4",
+          "Standard_F16s",
+          "Standard_F16",
+          "Standard_D8_v3",
+          "Standard_D8s_v3",
+          "Standard_D16_v3",
+          "Standard_D16s_v3",
+          "Standard_D32_v3",
+          "Standard_D32s_v3",
+          "Standard_F8s_v2",
+          "Standard_F16s_v2",
+          "Standard_F32s_v2"
+        ],
+        "metadata": {
+          "description": "Virtual Machine size selection - must be F4 or other instance that supports 4 NICs"
+        }
+      },
+      "fwbVnetName": {
+        "type": "string",
+        "defaultValue": "vnet-dmz",
+        "metadata": {
+          "description": "Name of the Azure virtual network."
+        }
+      },
+      "fwbVnetAddressPrefix": {
+        "type": "string",
+        "defaultValue": "10.48.200.0/23",
+        "metadata": {
+          "description": "Virtual Network Address prefix"
+        }
+      },
+      "fwbSubnet1Name": {
+        "type": "string",
+        "defaultValue": "snet-fwb-outside",
+        "metadata": {
+          "description": "Subnet 1 Name"
+        }
+      },
+      "fwbSubnet1Prefix": {
+        "type": "string",
+        "defaultValue": "10.48.200.0/28",
+        "metadata": {
+          "description": "Subnet 1 Prefix"
+        }
+      },
+      "fwbSubnet2Name": {
+        "type": "string",
+        "defaultValue": "snet-fwb-inside",
+        "metadata": {
+          "description": "Subnet 2 Name"
+        }
+      },
+      "fwbSubnet2Prefix": {
+        "type": "string",
+        "defaultValue": "10.48.200.16/28",
+        "metadata": {
+          "description": "Subnet 2 Prefix"
+        }
+      },
+      "fwbSubnet3Name": {
+        "type": "string",
+        "defaultValue": "snet-dmz-webservers",
+        "metadata": {
+          "description": "Subnet 3 Name"
+        }
+      },
+      "fwbSubnet3Prefix": {
+        "type": "string",
+        "defaultValue": "10.48.201.0/24",
+        "metadata": {
+          "description": "Subnet 3 Prefix"
+        }
+      },
+      "routeTableID": {
+          "type": "string"
+      },
+      "FortinetTags": {
+      "type": "object",
+      "defaultValue": {
+        "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
+        }
+      },
+      "artifactsBaseUrl": {
+        "type": "string",
+        "defaultValue": "https://raw.githubusercontent.com/fortinetsolutions/Azure-Templates/master/FortiGate/Active-Passive-HA-w-Azure-LBs",
+        "metadata": {
+          "description": "Base URL of the solution template gallery package",
+          "artifactsBaseUrl": ""
+        }
+      }
+    },
+    "variables": {
+      "location": "[resourceGroup().location]",
+  
+      "vnetNewOrExisting": "new",
+      "vnetResourceGroup": "[resourceGroup().name]",
+  
+      "vnetID": "[resourceId(variables('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('fwbVnetName'))]",
+      "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('fwbSubnet1Name'))]",
+      "subnet2Ref": "[concat(variables('vnetID'),'/subnets/', parameters('fwbSubnet2Name'))]",
+  
+      "vmName": "[concat(parameters('fortiWebNamePrefix'),'1')]",
+      "vm2Name": "[concat(parameters('fortiWebNamePrefix'),'2')]",
+  
+      "storageAccount_VM1": "[concat(variables('vmName'),uniqueString(resourceGroup().id))]",
+      "storageAccount_VM2": "[concat(variables('vm2Name'),uniqueString(resourceGroup().id))]",
+  
+      "network_NIC_fw11_Name": "[concat('nic-',variables('vmName'),'-01')]",
+      "network_NIC_fw11_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('network_NIC_fw11_Name'))]",
+      "network_NIC_fw12_Name": "[concat('nic-',variables('vmName'),'-02')]",
+      "network_NIC_fw12_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('network_NIC_fw12_Name'))]",
+      "network_NIC_fw21_Name": "[concat('nic-',variables('vm2Name'),'-01')]",
+      "network_NIC_fw21_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('network_NIC_fw21_Name'))]",
+      "network_NIC_fw22_Name": "[concat('nic-',variables('vm2Name'),'-02')]",
+      "network_NIC_fw22_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('network_NIC_fw22_Name'))]",
+
+      "NSGName": "[concat('nsg-',parameters('fortiWebNamePrefix'))]",
+
+      "updateIPURI": "[concat(parameters('artifactsBaseURL'),'/update-nic2.json')]"
+    },
+    "resources": [
+    {
+      "apiVersion": "2019-05-01",
+      "name": "pid-2dc4b447-552f-557f-b1cc-2faec6f9f133",
+      "type": "Microsoft.Resources/deployments",
+      "properties":{
+       "mode": "Incremental",
+       "template": {
+         "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deplymentTemplate.json#",
+         "contentVersion": "1.0.0.0",
+         "resources": []
+       } 
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('storageAccount_VM1')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('storageAccount_VM2')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },
+    {
+      "condition": "[equals(variables('vnetNewOrExisting'), 'new')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2017-09-01",
+      "name": "[parameters('fwbVnetName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('fwbVnetAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('fwbSubnet1Name')]",
+            "properties": {
+              "addressPrefix": "[parameters('fwbSubnet1Prefix')]",
+              "routeTable": {
+                  "id": "[parameters('routeTableID')]"
+                  }
+            }
+          },
+          {
+            "name": "[parameters('fwbSubnet2Name')]",
+            "properties": {
+              "addressPrefix": "[parameters('fwbSubnet2Prefix')]",
+              "routeTable": {
+                  "id": "[parameters('routeTableID')]"
+                  }
+            }
+          },
+          {
+            "name": "[parameters('fwbSubnet3Name')]",
+            "properties": {
+              "addressPrefix": "[parameters('fwbSubnet3Prefix')]",
+              "routeTable": {
+                  "id": "[parameters('routeTableID')]"
+                  }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "tags": {
+        "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('NSGName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowAllInbound",
+            "properties": {
+              "description": "Allow all in",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowAllOutbound",
+            "properties": {
+              "description": "Allow all out",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "tags": {
+        "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('network_NIC_fw11_Name')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[parameters('fwbVnetName')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnet1Ref')]"
+              }
+            }
+          }
+        ],
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "tags": {
+        "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('network_NIC_fw21_Name')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[variables('network_NIC_fw11_Name')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnet1Ref')]"
+              }
+            }
+          }
+        ],
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "tags": {
+       "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('network_NIC_fw12_Name')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[parameters('fwbVnetName')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnet2Ref')]"
+              }
+            }
+          }
+        ],
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "tags": {
+       "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('network_NIC_fw22_Name')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[variables('network_NIC_fw12_Name')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnet2Ref')]"
+              }
+            }
+          }
+        ],
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "UpdateNIC11",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[variables('NSGName')]",
+        "[variables('network_NIC_fw11_Name')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateIPURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[variables('network_NIC_fw11_Name')]"
+          },
+          "SubnetRef": {
+            "value": "[variables('subnet1Ref')]"
+          },
+          "privateIp": {
+            "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "FortinetTags": {
+            "value": "[parameters('FortinetTags')]"
+          },
+          "NSGName": {
+            "value": "[variables('NSGName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "UpdateNIC21",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[variables('NSGName')]",
+        "[variables('network_NIC_fw21_Name')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateIPURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[variables('network_NIC_fw21_Name')]"
+          },
+          "SubnetRef": {
+            "value": "[variables('subnet1Ref')]"
+          },
+          "privateIp": {
+            "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw21_Name'))).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "FortinetTags": {
+            "value": "[parameters('FortinetTags')]"
+          },
+          "NSGName": {
+            "value": "[variables('NSGName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "UpdateNIC12",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[variables('NSGName')]",
+        "[variables('network_NIC_fw12_Name')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateIPURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[variables('network_NIC_fw12_Name')]"
+          },
+          "SubnetRef": {
+            "value": "[variables('subnet2Ref')]"
+          },
+          "privateIp": {
+            "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw12_Name'))).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "FortinetTags": {
+            "value": "[parameters('FortinetTags')]"
+          },
+          "NSGName": {
+            "value": "[variables('NSGName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "UpdateNIC22",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[variables('NSGName')]",
+        "[variables('network_NIC_fw22_Name')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateIPURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[variables('network_NIC_fw22_Name')]"
+          },
+          "SubnetRef": {
+            "value": "[variables('subnet2Ref')]"
+          },
+          "privateIp": {
+            "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw22_Name'))).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "FortinetTags": {
+            "value": "[parameters('FortinetTags')]"
+          },
+          "NSGName": {
+            "value": "[variables('NSGName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "zones": [
+        "1"
+      ],
+      "apiVersion": "2017-03-30",
+      "tags": {
+        "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "location": "[variables('location')]",
+      "plan": {
+        "name": "[parameters('FortiWebImageSKU')]",
+        "publisher": "fortinet",
+        "product": "fortinet_fortiweb-vm_v5"
+      },
+      "dependsOn": [
+        "UpdateNIC11",
+        "UpdateNIC12",
+        "[variables('storageAccount_VM1')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('instanceType')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "customData": "[base64(concat('{\"cloud-initd\": \"enable\", \"usr-cli\": \"config system admin\n edit admin\n set password ',parameters('adminPassword'), '\n next\n end\n config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw21_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "fortinet",
+            "offer": "fortinet_fortiweb-vm_v5",
+            "sku": "[parameters('FortiWebImageSKU')]",
+            "version": "[parameters('FortiWebVersion')]"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "diskSizeGB": 30,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "properties": {
+                "primary": true
+              },
+              "id": "[variables('network_NIC_fw11_Id')]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[variables('network_NIC_fw12_Id')]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://',variables('storageAccount_VM1'),'.blob.core.windows.net/')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vm2Name')]",
+      "zones": [
+        "2"
+      ],
+      "apiVersion": "2017-03-30",
+      "tags": {
+        "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
+      "location": "[variables('location')]",
+      "plan": {
+        "name": "fortinet_fw-vm",
+        "publisher": "fortinet",
+        "product": "fortinet_fortiweb-vm_v5"
+      },
+      "dependsOn": [
+        "UpdateNIC21",
+        "UpdateNIC22",
+        "[variables('storageAccount_VM2')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('instanceType')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vm2Name')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "customData": "[base64(concat('{\"cloud-initd\": \"enable\", \"usr-cli\": \"config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "fortinet",
+            "offer": "fortinet_fortiweb-vm_v5",
+            "sku": "fortinet_fw-vm",
+            "version": "[parameters('FortiWebVersion')]"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "diskSizeGB": 30,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "properties": {
+                "primary": true
+              },
+              "id": "[variables('network_NIC_fw21_Id')]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[variables('network_NIC_fw22_Id')]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://',variables('storageAccount_VM2'),'.blob.core.windows.net/')]"
+          }
+        }
+      }
+    }
+    ],
+    "outputs": {
+    "cloudinitvm2": {
+      "value": "[concat('{\"cloud-initd\": \"enable\" \"usr-cli\": \"config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}')]",
+      "type": "string"
+    }
+  }
+}
