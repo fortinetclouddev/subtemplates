@@ -668,7 +668,7 @@
           "computerName": "[variables('vm2Name')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
-          "customData": "[base64(concat('{\"cloud-initd\": \"enable\", \"usr-cli\": \"config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}'))]"
+          "customData": "[base64(concat('{\"cloud-initd\": \"enable\", \"usr-cli\": \"config system admin\n edit admin\n set password ',parameters('adminPassword'), '\n next\n end\n config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}'))]"
         },
         "storageProfile": {
           "imageReference": {
