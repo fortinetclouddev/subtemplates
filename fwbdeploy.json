@@ -651,7 +651,7 @@
       },
       "location": "[variables('location')]",
       "plan": {
-        "name": "fortinet_fw-vm",
+        "name": "[parameters('FortiWebImageSKU')]",
         "publisher": "fortinet",
         "product": "fortinet_fortiweb-vm_v5"
       },
@@ -674,7 +674,7 @@
           "imageReference": {
             "publisher": "fortinet",
             "offer": "fortinet_fortiweb-vm_v5",
-            "sku": "fortinet_fw-vm",
+            "sku": "[parameters('FortiWebImageSKU')]",
             "version": "[parameters('FortiWebVersion')]"
           },
           "osDisk": {
