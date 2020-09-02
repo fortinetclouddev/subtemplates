@@ -714,8 +714,12 @@
     }
     ],
     "outputs": {
-    "cloudinitvm2": {
-      "value": "[concat('{\"cloud-initd\": \"enable\" \"usr-cli\": \"config system conf-sync\n set ip ', reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress, '\n set password ', parameters('adminPassword'), '\n set auto-sync enable\n set frequency every\n set time 00:05\n end\n\"}')]",
+    "fwb1Port1IP": {
+      "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw11_Name'))).ipConfigurations[0].properties.privateIPAddress]",
+      "type": "string"
+    },
+    "fwb2Port1IP": {
+      "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('network_NIC_fw21_Name'))).ipConfigurations[0].properties.privateIPAddress]",
       "type": "string"
     }
   }
