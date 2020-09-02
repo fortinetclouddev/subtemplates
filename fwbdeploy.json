@@ -436,7 +436,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "UpdateNIC11",
+      "name": "UpdateFwbNIC11",
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "[variables('NSGName')]",
@@ -469,7 +469,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "UpdateNIC21",
+      "name": "UpdateFwbNIC21",
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "[variables('NSGName')]",
@@ -502,7 +502,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "UpdateNIC12",
+      "name": "UpdateFwbNIC12",
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "[variables('NSGName')]",
@@ -535,7 +535,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "UpdateNIC22",
+      "name": "UpdateFwbNIC22",
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "[variables('NSGName')]",
@@ -583,8 +583,8 @@
         "product": "fortinet_fortiweb-vm_v5"
       },
       "dependsOn": [
-        "UpdateNIC11",
-        "UpdateNIC12",
+        "UpdateFwbNIC11",
+        "UpdateFwbNIC12",
         "[variables('storageAccount_VM1')]"
       ],
       "properties": {
@@ -656,8 +656,8 @@
         "product": "fortinet_fortiweb-vm_v5"
       },
       "dependsOn": [
-        "UpdateNIC21",
-        "UpdateNIC22",
+        "UpdateFwbNIC21",
+        "UpdateFwbNIC22",
         "[variables('storageAccount_VM2')]"
       ],
       "properties": {
