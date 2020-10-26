@@ -202,8 +202,8 @@
   
     "NSGName": "[concat('nsg-',parameters('FortiGateNamePrefix'),'-',uniqueString(resourceGroup().id))]",
 
-    "localAdminSSHPort": "22",
-    "localAdminHTTPSPort": "8443",
+    "localAdminSSHPort": "9022",
+    "localAdminHTTPSPort": "9443",
 
     "sn1IPArray": "[split(parameters('Subnet1Prefix'),'.')]",
     "sn1IPArray2ndString": "[string(variables('sn1IPArray')[3])]",
