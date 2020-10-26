@@ -200,7 +200,7 @@
 
     "publicIPID": "[resourceID(parameters('publicIPAddressResourceGroup'),'Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]",
   
-    "NSGName": "[concat(parameters('FortiGateNamePrefix'),'-',uniqueString(resourceGroup().id),'-NSG')]",
+    "NSGName": "[concat('nsg-',parameters('FortiGateNamePrefix'),'-',uniqueString(resourceGroup().id))]",
 
     "localAdminSSHPort": "22",
     "localAdminHTTPSPort": "8443",
