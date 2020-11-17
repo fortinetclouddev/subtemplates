@@ -37,6 +37,7 @@
               "name": "ipconfig1",
               "properties": {
                 "privateIPAllocationMethod": "Static",
+                "enableAcceleratedNetworking": true,
                 "privateIPAddress": "[parameters('privateIp')]",
                 "subnet": {
                   "id": "[parameters('SubnetRef')]"
