@@ -40,7 +40,6 @@
               "name": "ipconfig1",
               "properties": {
                 "privateIPAllocationMethod": "Static",
-                "enableAcceleratedNetworking": true,
                 "privateIPAddress": "[parameters('privateIp')]",
                 "publicIPAddress": {
                   "id": "[parameters('publicIp')]"
@@ -52,6 +51,7 @@
             }
           ],
           "enableIPForwarding": false,
+          "enableAcceleratedNetworking": true,
           "networkSecurityGroup": {
             "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',parameters('NSGName'))]"
           }
