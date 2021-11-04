@@ -131,6 +131,23 @@
               "required": true
             },
             "visible": true
+          },
+          {
+            "name": "FortiGateASN",
+            "type": "Microsoft.Common.TextBox",
+            "label": "FortiGate BGP ASN",
+            "defaultValue": "64512",
+            "toolTip": "The scale unit determines the size and number of resources deployed. The higher the scale unit, the greater the amount of traffic that can be handled.",
+            "constraints": {
+                "validations": [
+                    {
+                      "isValid": "[or(range(1,8073),range(8076,12075),range(12077,23455),range(23457,64495),range(64512,65514),range(65521,65534))]",
+                      "message": "Must be valid BGP public or private ASN"
+                    }
+                  ],
+              "required": true
+            },
+            "visible": true
           }
         ]
       }
@@ -143,8 +160,9 @@
       "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
       "hubId": "[steps('VirtualWANNVA').hub.id]",
       "location": "[steps('VirtualWANNVA').hub.location]",
-      "HubRouters": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterIps",
-      "HubASN": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterAsn"
+      "HubRouters": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterIps]",
+      "HubASN": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterAsn]",
+      "fortiGateASN": "[steps('FortiGateASN')]"
         }
     }
 }
