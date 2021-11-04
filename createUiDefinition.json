@@ -142,7 +142,7 @@
                 "validations": [
                   {
                     "isValid": "[or(and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 0)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 12076)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 64496),greater(int(steps('VirtualWANNVA').FortiGateASN), 23546)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65515),greater(int(steps('VirtualWANNVA').FortiGateASN), 64511)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65535),greater(int(steps('VirtualWANNVA').FortiGateASN), 65520)))]",
-                    "message": "Must be valid BGP public or private ASN"
+                    "message": "Must be valid BGP public or private ASN and cannot conflict with Azure private ASNs"
                   }
                   ],
               "required": true
@@ -160,8 +160,8 @@
       "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
       "hubId": "[steps('VirtualWANNVA').hub.id]",
       "location": "[steps('VirtualWANNVA').hub.location]",
-      "HubRouters": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterIps]",
-      "HubASN": "[steps('VirtualWANNVA').hub.hubProperties.properties.virtualRouterAsn]",
+      "HubRouters": "[steps('VirtualWANNVA').hub.properties.virtualRouterIps]",
+      "HubASN": "[steps('VirtualWANNVA').hub.properties.virtualRouterAsn]",
       "fortiGateASN": "[steps('VirtualWANNVA').FortiGateASN]"
         }
     }
