@@ -64,7 +64,7 @@
             "metadata": {
                 "description": "Virtual WAN Hub Router IPs"
             }
-        },
+        }
     },
     "variables": {
         "hubRouters": "[parameters('hubRouters')]",
