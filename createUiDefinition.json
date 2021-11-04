@@ -141,7 +141,7 @@
             "constraints": {
                 "validations": [
                   {
-                    "isValid": "[or(not(greater((steps('VirtualWANNVA').FortiGateASN), 65534)),(not(less((steps('VirtualWANNVA').FortiGateASN), 1))))]",
+                    "isValid": "[or(not(greater((steps('VirtualWANNVA').FortiGateASN), 65534)),not(less((steps('VirtualWANNVA').FortiGateASN), 1)))]",
                     "message": "Must be valid BGP public or private ASN"
                   }
                   ],
