@@ -141,7 +141,7 @@
             "constraints": {
                 "validations": [
                   {
-                    "isValid": "[or(and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 0)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 12076)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 64496),greater(int(steps('VirtualWANNVA').FortiGateASN), 23546)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65515),greater(int(steps('VirtualWANNVA').FortiGateASN), 64511)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65535),greater(int(steps('VirtualWANNVA').FortiGateASN), 65520)),equals(steps('VirtualWANNVA').FortiGateASN), 65516))]",
+                    "isValid": "[or(and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 0)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 23456),greater(int(steps('VirtualWANNVA').FortiGateASN), 12076)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 64496),greater(int(steps('VirtualWANNVA').FortiGateASN), 23546)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65515),greater(int(steps('VirtualWANNVA').FortiGateASN), 64511)),and(less(int(steps('VirtualWANNVA').FortiGateASN), 65535),greater(int(steps('VirtualWANNVA').FortiGateASN), 65520)),equals(int(steps('VirtualWANNVA').FortiGateASN), 65516))]",
                     "message": "Must be valid BGP public or private ASN"
                   }
                   ],
