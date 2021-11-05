@@ -58,14 +58,7 @@
                 "description": "The scale unit size to deploy"
             }
         },
-        "hubRouter1": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Virtual WAN Hub Router IPs"
-            }
-        },
-        "hubRouter2": {
+        "hubRouters": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
@@ -85,8 +78,9 @@
         }
     },
     "variables": {
-        "hubRouter1": "[parameters('hubRouter1')]",
-        "hubRouter2": "[parameters('hubRouter2')]",
+        "hubRouters": "[array(parameters('hubRouters'))]",
+        "hubRouter1": "[variables('hubRouters')[0]]",
+        "hubRouter2": "[variables('hubRouters')[1]]",
         "hubRouterASN": "[parameters('HubASN')]",
         "customData-BGPConfig": "[concat('config router bgp\n set as ', parameters('fortiGateASN'), '\n set ebgp-multipath enable\n set graceful-restart enable\n config neighbor\n edit ',variables('hubRouter1'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n edit ',variables('hubRouter2'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n \n end\n end\n')]",
         "customData-InterfaceConf": "config system interface\n edit port1\n next\n edit port2\n set mode dhcp\n set defaultgw enable\n set allowaccess ping https ssh ftm\n next\n end\n",

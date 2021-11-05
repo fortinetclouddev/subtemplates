@@ -176,11 +176,7 @@
             "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
             "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
             "hubId": "[steps('VirtualWANNVA').hub.id]",
-            "HubRouter1": {
-              "type": "string",
-              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps)]"
-            },
-            "HubRouter2": {
+            "HubRouters": {
               "type": "string",
               "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps)]"
             },
