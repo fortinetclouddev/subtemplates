@@ -178,11 +178,11 @@
             "hubId": "[steps('VirtualWANNVA').hub.id]",
             "HubRouter1": {
               "type": "string",
-              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[0])]"
+              "value": "[string(array(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[0]))]"
             },
             "HubRouter2": {
               "type": "string",
-              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[1])]"
+              "value": "[string(array(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[1]))]"
             },
             "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
             "location": "[steps('VirtualWANNVA').hub.location]",
