@@ -3,9 +3,7 @@
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
     "parameters": {
-        "basics": [
-            
-        ],
+        "basics": [],
         "steps": [
         {
         "name": "VirtualWANNVA",
@@ -154,10 +152,10 @@
       }
     ],
         "outputs": {
-            "fortiGateNamePrefix": "[basics('fortiGateNamePrefix')]",
-            "fortiGateImageVersion": "[basics('fortiGateImageVersion')]",
-      "adminUsername": "[basics('adminUsername')]",
-      "adminPassword": "[basics('adminPassword')]",
+            "fortiGateNamePrefix": "[steps('VirtualWANNVA').fortiGateNamePrefix]",
+            "fortiGateImageVersion": "[steps('VirtualWANNVA').fortiGateImageVersion]",
+      "adminUsername": "[steps('VirtualWANNVA').adminUsername]",
+      "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
       "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
       "hubId": "[steps('VirtualWANNVA').hub.id]",
       "location": "[steps('VirtualWANNVA').hub.location]",
