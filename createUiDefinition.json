@@ -163,7 +163,7 @@
             "visible": "[not(empty(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps))]",
             "options": {
               "icon": "Info",
-              "text": "[concat('BGP neighbor IPs ', string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps), 'Virtual WAN Hub BGP ASN ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn))]"
+              "text": "[concat('BGP neighbor IPs ', string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[0]),' ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[1]), ' Virtual WAN Hub BGP ASN ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn))]"
             }
           }
         ]
@@ -176,9 +176,13 @@
             "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
             "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
             "hubId": "[steps('VirtualWANNVA').hub.id]",
-            "HubRouters": {
-              "type": "array",
-              "value": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]"
+            "HubRouter1": {
+              "type": "string",
+              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[0])]"
+            },
+            "HubRouter2": {
+              "type": "string",
+              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[1])]"
             },
             "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
             "location": "[steps('VirtualWANNVA').hub.location]",
