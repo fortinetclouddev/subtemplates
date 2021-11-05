@@ -163,7 +163,7 @@
             "visible": "[not(empty(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps))]",
             "options": {
               "icon": "Info",
-              "text": "[concat('BGP neighbor IPs ', string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[0]),' ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps[1]), ' Virtual WAN Hub BGP ASN ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn))]"
+              "text": "[concat('Hub Routers ', string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps),' Hub BGP ASN ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn))]"
             }
           }
         ]
