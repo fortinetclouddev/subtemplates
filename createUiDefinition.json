@@ -160,8 +160,6 @@
       "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
       "hubId": "[steps('VirtualWANNVA').hub.id]",
       "location": "[steps('VirtualWANNVA').hub.location]",
-      "HubRouters": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]",
-      "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
       "fortiGateASN": "[steps('VirtualWANNVA').FortiGateASN]"
         }
     }
