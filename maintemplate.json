@@ -60,7 +60,7 @@
         },
         "hubRouters": {
             "type": "object",
-            "defaultValue": "",
+            "defaultValue": {},
             "metadata": {
                 "description": "Virtual WAN Hub Router IPs"
             }
