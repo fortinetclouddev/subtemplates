@@ -156,6 +156,15 @@
               ]
             },
             "visible": true
+          },
+          {
+            "name": "hubInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": "[not(empty(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps))]",
+            "options": {
+              "icon": "Info",
+              "text": "[concat('BGP neighbor IPs ', string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps), 'Virtual WAN Hub BGP ASN ',string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn))]"
+            }
           }
         ]
       }
@@ -167,7 +176,10 @@
             "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
             "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
             "hubId": "[steps('VirtualWANNVA').hub.id]",
-            "HubRouters": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]",
+            "HubRouters": {
+              "type": "array",
+              "value": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]"
+            },
             "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
             "location": "[steps('VirtualWANNVA').hub.location]",
             "fortiGateASN": "[steps('VirtualWANNVA').FortiGateASN]"
