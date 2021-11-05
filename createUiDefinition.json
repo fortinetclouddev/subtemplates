@@ -177,8 +177,8 @@
             "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
             "hubId": "[steps('VirtualWANNVA').hub.id]",
             "hubRouters": {
-              "type": "string",
-              "value": "[string(steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps)]"
+              "type": "object",
+              "value": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]"
             },
             "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
             "location": "[steps('VirtualWANNVA').hub.location]",

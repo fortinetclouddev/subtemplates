@@ -59,7 +59,7 @@
             }
         },
         "hubRouters": {
-            "type": "string",
+            "type": "object",
             "defaultValue": "",
             "metadata": {
                 "description": "Virtual WAN Hub Router IPs"
@@ -78,11 +78,8 @@
         }
     },
     "variables": {
-        "hubRouters": "[split(parameters('hubRouters'),',')]",
-        "hubRouter1Array": "[split(string(variables('hubRouters')[0]),'\"')]",
-        "hubRouter2Array": "[split(string(variables('hubRouters')[1]),'\"')]",
-        "hubRouter1": "[string(variables('hubRouter1Array')[1])]",
-        "hubRouter2": "[string(variables('hubRouter2Array')[1])]",
+        "hubRouter1": "[string(parameters('hubRouters')[0])]",
+        "hubRouter2": "[string(parameters('hubRouters')[1])]",
         "hubRouterASN": "[parameters('HubASN')]",
         "customData-BGPConfig": "[concat('config router bgp\n set as ', parameters('fortiGateASN'), '\n set ebgp-multipath enable\n set graceful-restart enable\n config neighbor\n edit ',variables('hubRouter1'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n edit ',variables('hubRouter2'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n \n end\n end\n')]",
         "customData-InterfaceConf": "config system interface\n edit port1\n next\n edit port2\n set mode dhcp\n set defaultgw enable\n set allowaccess ping https ssh ftm\n next\n end\n",
