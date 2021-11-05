@@ -78,7 +78,7 @@
         }
     },
     "variables": {
-        "hubRouters": "[array(parameters('hubRouters'))]",
+        "hubRouters": "[createArray(parameters('hubRouters'))]",
         "hubRouter1": "[variables('hubRouters')[0]]",
         "hubRouter2": "[variables('hubRouters')[1]]",
         "hubRouterASN": "[parameters('HubASN')]",
