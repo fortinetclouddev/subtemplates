@@ -58,17 +58,34 @@
                 "description": "The scale unit size to deploy"
             }
         },
+        "hubRouters": {
+            "type": "object",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Virtual WAN Hub Router IPs"
+            }
+        },
+        "hubASN": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Virtual WAN Hub Router IPs"
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": ""
         }
     },
     "variables": {
-        "customData-BGPConfig": "[concat('config router bgp\n set as ', parameters('fortiGateASN'), '\n set ebgp-multipath enable\n set graceful-restart enable\n end\n')]",
+        "hubRouters": "[parameters('hubRouters')]",
+        "hubRouter1": "[variables('hubRouters')[0]]",
+        "hubRouter2": "[variables('hubRouters')[1]]",
+        "customData-BGPConfig": "[concat('config router bgp\n set as ', parameters('fortiGateASN'), '\n set ebgp-multipath enable\n set graceful-restart enable\n config neighbor\n edit ',variables('hubRouter1'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n edit ',variables('hubRouter2'), 'set ebgp-enforce-multihop enable\n set interface port2\n set remote-as \n',variables('hubRouterASN'),'\n next\n \n end\n end\n')]",
         "customData-InterfaceConf": "config system interface\n edit port1\n next\n edit port2\n set mode dhcp\n set defaultgw enable\n set allowaccess ping https ssh ftm\n next\n end\n",
         "customData-ProbeResponse": "config system probe-response\n set http-probe-value OK\n set mode http-probe\n end\n",
         "uniqueId": "[uniqueString(subscription().subscriptionId, deployment().name, 'FortiGate-sdwan')]",
-        "nvaName": "[concat(parameters('fortiGateNamePrefix'), variables('uniqueId'))]"
+        "nvaName": "[concat(parameters('fortiGateNamePrefix'),'-',variables('uniqueId'))]"
     },
     "resources": [
         {

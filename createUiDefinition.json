@@ -7,7 +7,7 @@
         "steps": [
         {
         "name": "VirtualWANNVA",
-        "label": "Virtual WAN FortiGate",
+        "label": "FortiGate Secure SDWAN in Virtual WAN",
         "bladeTitle": "Create FortiGate vWAN gateway",
         "bladeSubtitle": "Create FortiGate Secure SDWAN vWAN gateway",
         "elements": [{
@@ -24,6 +24,15 @@
             }
           },
           "visible": true
+        },
+        {
+          "name": "hubProperties",
+          "type": "Microsoft.Solutions.ArmApiControl",
+          "toolTip": "The properties of the target virtual WAN hub.",
+          "request": {
+            "method": "GET",
+            "path": "[concat(coalesce(steps('VirtualWANNVA').hub.id, ''), '?api-version=2020-05-01')]"
+          }
         },
         {
             "name": "scaleUnit",
@@ -154,12 +163,14 @@
         "outputs": {
             "fortiGateNamePrefix": "[steps('VirtualWANNVA').fortiGateNamePrefix]",
             "fortiGateImageVersion": "[steps('VirtualWANNVA').fortiGateImageVersion]",
-      "adminUsername": "[steps('VirtualWANNVA').adminUsername]",
-      "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
-      "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
-      "hubId": "[steps('VirtualWANNVA').hub.id]",
-      "location": "[steps('VirtualWANNVA').hub.location]",
-      "fortiGateASN": "[steps('VirtualWANNVA').FortiGateASN]"
+            "adminUsername": "[steps('VirtualWANNVA').adminUsername]",
+            "adminPassword": "[steps('VirtualWANNVA').adminPassword]",
+            "scaleUnit": "[steps('VirtualWANNVA').scaleUnit]",
+            "hubId": "[steps('VirtualWANNVA').hub.id]",
+            "HubRouters": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterIps]",
+            "HubASN": "[steps('VirtualWANNVA').hubProperties.properties.virtualRouterAsn]",
+            "location": "[steps('VirtualWANNVA').hub.location]",
+            "fortiGateASN": "[steps('VirtualWANNVA').FortiGateASN]"
         }
     }
 }
